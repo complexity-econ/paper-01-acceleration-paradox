@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 from scipy.stats import gaussian_kde, norm
 from pathlib import Path
 
-RESULTS_DIR = Path(__file__).parent.parent / "results"
-FIGURES_DIR = Path(__file__).parent.parent / "figures"
+RESULTS_DIR = Path(__file__).parent.parent.parent / "simulations" / "results"
+FIGURES_DIR = Path(__file__).parent.parent.parent / "figures"
 
 plt.rcParams.update({
     'font.size': 10, 'axes.titlesize': 11, 'axes.labelsize': 10,
@@ -95,9 +95,9 @@ axes[1].set_ylabel("BIC")
 axes[1].set_title("B. Model selection (BIC)", fontweight='bold')
 axes[1].set_xticks(range(1, 6))
 
-for fname, label, color in [("nobdp_terminal.csv", "BDP=0", '#2196F3'),
-                              ("baseline_terminal.csv", "BDP=2000", '#4CAF50'),
-                              ("bdp3000_terminal.csv", "BDP=3000", '#F44336')]:
+for fname, label, color in [("nobdp_terminal.csv", "UBI=0", '#2196F3'),
+                              ("baseline_terminal.csv", "UBI=2,000", '#4CAF50'),
+                              ("bdp3000_terminal.csv", "UBI=3,000", '#F44336')]:
     d = pd.read_csv(RESULTS_DIR / fname, sep=";", decimal=",")
     vals = d['TotalAdoption'].values * 100
     kde_s = gaussian_kde(vals)

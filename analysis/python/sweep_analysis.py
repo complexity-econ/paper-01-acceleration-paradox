@@ -13,8 +13,8 @@ plt.rcParams.update({
     'figure.dpi': 200, 'savefig.dpi': 200, 'savefig.bbox': 'tight',
 })
 
-ROOT = Path(__file__).parent.parent
-MC_DIR = ROOT / "results" / "sweep"
+ROOT = Path(__file__).parent.parent.parent
+MC_DIR = ROOT / "simulations" / "results" / "sweep"
 OUT_DIR = ROOT / "figures"
 
 bdp_levels = list(range(0, 5001, 250))
@@ -58,9 +58,9 @@ means = data.groupby('BDP')['Adoption'].agg(['mean', 'std'])
 ax.plot(means.index, means['mean'], 'k-', linewidth=2, zorder=5)
 ax.fill_between(means.index, means['mean']-means['std'], means['mean']+means['std'],
                 alpha=0.2, color='gray')
-ax.set_xlabel("BDP (PLN/mies.)")
-ax.set_ylabel("Adopcja technologiczna M120 (%)")
-ax.set_title("A. Diagram bifurkacyjny: adopcja", fontweight='bold')
+ax.set_xlabel("UBI (PLN/month)")
+ax.set_ylabel("Technology adoption M120 (%)")
+ax.set_title("A. Bifurcation diagram: adoption", fontweight='bold')
 ax.axvline(x=2000, color='green', linestyle='--', alpha=0.5, linewidth=1)
 ax.set_xlim(-100, 5100)
 
@@ -73,18 +73,18 @@ ax.plot(means_inf.index, means_inf['mean'], 'k-', linewidth=2, zorder=5)
 ax.fill_between(means_inf.index, means_inf['mean']-means_inf['std'],
                 means_inf['mean']+means_inf['std'], alpha=0.2, color='gray')
 ax.axhline(y=0, color='gray', linewidth=0.5, linestyle=':')
-ax.set_xlabel("BDP (PLN/mies.)")
-ax.set_ylabel("Inflacja M120 (%)")
-ax.set_title("B. Diagram bifurkacyjny: inflacja", fontweight='bold')
+ax.set_xlabel("UBI (PLN/month)")
+ax.set_ylabel("Inflation M120 (%)")
+ax.set_title("B. Bifurcation diagram: inflation", fontweight='bold')
 ax.axvline(x=2000, color='green', linestyle='--', alpha=0.5, linewidth=1)
 
 # Panel C: Variance (σ) of adoption vs BDP — shows critical point
 ax = axes[1, 0]
 stds = data.groupby('BDP')['Adoption'].std()
 ax.bar(stds.index, stds.values, width=200, color='#FF5722', alpha=0.7, edgecolor='white')
-ax.set_xlabel("BDP (PLN/mies.)")
-ax.set_ylabel("σ adopcji (%)")
-ax.set_title("C. Wariancja adopcji — sygnatura punktu krytycznego", fontweight='bold')
+ax.set_xlabel("UBI (PLN/month)")
+ax.set_ylabel("σ of adoption (%)")
+ax.set_title("C. Adoption variance — critical point signature", fontweight='bold')
 ax.axvline(x=2000, color='green', linestyle='--', alpha=0.5, linewidth=1)
 
 # Panel D: Unemployment vs BDP
@@ -95,12 +95,12 @@ means_u = data.groupby('BDP')['Unemployment'].agg(['mean', 'std'])
 ax.plot(means_u.index, means_u['mean'], 'k-', linewidth=2, zorder=5)
 ax.fill_between(means_u.index, means_u['mean']-means_u['std'],
                 means_u['mean']+means_u['std'], alpha=0.2, color='gray')
-ax.set_xlabel("BDP (PLN/mies.)")
-ax.set_ylabel("Bezrobocie M120 (%)")
-ax.set_title("D. Bezrobocie vs. BDP", fontweight='bold')
+ax.set_xlabel("UBI (PLN/month)")
+ax.set_ylabel("Unemployment M120 (%)")
+ax.set_title("D. Unemployment vs. UBI", fontweight='bold')
 ax.axvline(x=2000, color='green', linestyle='--', alpha=0.5, linewidth=1)
 
-fig.suptitle("Diagram bifurkacyjny: BDP sweep 0–5 000 PLN (30 seedów × 21 punktów)",
+fig.suptitle("Bifurcation diagram: UBI sweep 0–5,000 PLN (30 seeds × 21 points)",
              fontsize=12, fontweight='bold', y=1.01)
 fig.tight_layout()
 fig.savefig(OUT_DIR / "v5_mc_bifurcation.png")

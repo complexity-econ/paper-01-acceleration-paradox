@@ -13,15 +13,16 @@ plt.rcParams.update({
     'figure.dpi': 200, 'savefig.dpi': 200, 'savefig.bbox': 'tight',
 })
 
-MC_DIR = Path("mc")
-OUT_DIR = Path(".")
+ROOT = Path(__file__).parent.parent.parent
+MC_DIR = ROOT / "simulations" / "results" / "gus"
+OUT_DIR = ROOT / "figures"
 
 # Load terminal data
 term_nobdp = pd.read_csv(MC_DIR / "gus_nobdp_terminal.csv", sep=";", decimal=",")
 term_base  = pd.read_csv(MC_DIR / "gus_baseline_terminal.csv", sep=";", decimal=",")
 term_bdp3k = pd.read_csv(MC_DIR / "gus_bdp3k_terminal.csv", sep=";", decimal=",")
 
-scenarios = ['BDP = 0', 'BDP = 2 000', 'BDP = 3 000']
+scenarios = ['UBI = 0', 'UBI = 2,000', 'UBI = 3,000']
 colors = ['#2196F3', '#4CAF50', '#F44336']
 dfs = [term_nobdp, term_base, term_bdp3k]
 
@@ -32,8 +33,8 @@ dfs = [term_nobdp, term_base, term_bdp3k]
 fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
 
 # Panel A: Per-sector adoption bars
-sectors = ['BPO/SSC\n(σ=50, 3%)', 'Przemysł\n(σ=10, 16%)', 'Handel/Usługi\n(σ=5, 45%)',
-           'Ochrona zdrowia\n(σ=2, 6%)', 'Budżetówka\n(σ=1, 22%)', 'Rolnictwo\n(σ=3, 8%)']
+sectors = ['BPO/SSC\n(σ=50, 3%)', 'Manufacturing\n(σ=10, 16%)', 'Retail/Services\n(σ=5, 45%)',
+           'Healthcare\n(σ=2, 6%)', 'Public sector\n(σ=1, 22%)', 'Agriculture\n(σ=3, 8%)']
 sec_cols = ['BPO_Auto', 'Manuf_Auto', 'Retail_Auto', 'Health_Auto', 'Public_Auto', 'Agri_Auto']
 
 x = np.arange(len(sectors))
@@ -47,13 +48,13 @@ for i, (df, color, label) in enumerate(zip(dfs, colors, scenarios)):
 
 axes[0].set_xticks(x + w)
 axes[0].set_xticklabels(sectors, rotation=20, ha='right', fontsize=8)
-axes[0].set_ylabel("Adopcja technologiczna M120 (%)")
-axes[0].set_title("A. Adopcja per sektor — kalibracja GUS 2024", fontweight='bold')
+axes[0].set_ylabel("Technology adoption M120 (%)")
+axes[0].set_title("A. Per-sector adoption — GUS 2024 calibration", fontweight='bold')
 axes[0].legend(loc='upper right')
 axes[0].set_ylim(0, 100)
 
 # Panel B: Macro comparison (total adoption, inflation, unemployment)
-metrics = ['Adopcja\nogółem (%)', 'Inflacja\n(%)', 'Bezrobocie\n(%)']
+metrics = ['Total\nadoption (%)', 'Inflation\n(%)', 'Unemployment\n(%)']
 metric_cols = ['TotalAdoption', 'Inflation', 'Unemployment']
 
 x2 = np.arange(len(metrics))
@@ -66,10 +67,10 @@ for i, (df, color, label) in enumerate(zip(dfs, colors, scenarios)):
 axes[1].set_xticks(x2 + w)
 axes[1].set_xticklabels(metrics)
 axes[1].axhline(y=0, color='gray', linewidth=0.5, linestyle=':')
-axes[1].set_title("B. Agregaty makroekonomiczne", fontweight='bold')
+axes[1].set_title("B. Macroeconomic aggregates", fontweight='bold')
 axes[1].legend(loc='upper right')
 
-fig.suptitle("Model skalibrowany GUS 2024: 6 sektorów × 3 scenariusze BDP (N=100 seedów)",
+fig.suptitle("GUS 2024 calibrated model: 6 sectors × 3 UBI scenarios (N=100 seeds)",
              fontsize=12, fontweight='bold', y=1.02)
 fig.tight_layout()
 fig.savefig(OUT_DIR / "v6_gus_sector_comparison.png")
@@ -93,9 +94,9 @@ axes[0].errorbar(bdp_levels, bpo_means, yerr=bpo_stds, fmt='o-', capsize=8,
                  color='#333', markersize=8, linewidth=2)
 for x_pt, y_pt, c in zip(bdp_levels, bpo_means, colors_pts):
     axes[0].scatter(x_pt, y_pt, c=c, s=120, zorder=5, edgecolor='white', linewidth=1.5)
-axes[0].set_xlabel("BDP (PLN/mies.)")
-axes[0].set_ylabel("Adopcja BPO/SSC M120 (%)")
-axes[0].set_title("A. BPO: Paradoks Akceleracji ↑", fontweight='bold', color='#4CAF50')
+axes[0].set_xlabel("UBI (PLN/month)")
+axes[0].set_ylabel("BPO/SSC adoption M120 (%)")
+axes[0].set_title("A. BPO: Acceleration Paradox ↑", fontweight='bold', color='#4CAF50')
 axes[0].set_xticks(bdp_levels)
 axes[0].set_ylim(50, 95)
 axes[0].annotate('+21pp', xy=(2000, bpo_means[1]), xytext=(2500, bpo_means[1]-8),
@@ -108,9 +109,9 @@ axes[1].errorbar(bdp_levels, mfg_means, yerr=mfg_stds, fmt='o-', capsize=8,
                  color='#333', markersize=8, linewidth=2)
 for x_pt, y_pt, c in zip(bdp_levels, mfg_means, colors_pts):
     axes[1].scatter(x_pt, y_pt, c=c, s=120, zorder=5, edgecolor='white', linewidth=1.5)
-axes[1].set_xlabel("BDP (PLN/mies.)")
-axes[1].set_ylabel("Adopcja Manufacturing M120 (%)")
-axes[1].set_title("B. Przemysł: Odwrócony Paradoks ↓", fontweight='bold', color='#F44336')
+axes[1].set_xlabel("UBI (PLN/month)")
+axes[1].set_ylabel("Manufacturing adoption M120 (%)")
+axes[1].set_title("B. Manufacturing: Reverse Paradox ↓", fontweight='bold', color='#F44336')
 axes[1].set_xticks(bdp_levels)
 axes[1].set_ylim(15, 55)
 axes[1].annotate('−14pp', xy=(2000, mfg_means[1]), xytext=(2500, mfg_means[1]+5),
@@ -124,12 +125,12 @@ axes[2].errorbar(bdp_levels, inf_means, yerr=inf_stds, fmt='o-', capsize=8,
 for x_pt, y_pt, c in zip(bdp_levels, inf_means, colors_pts):
     axes[2].scatter(x_pt, y_pt, c=c, s=120, zorder=5, edgecolor='white', linewidth=1.5)
 axes[2].axhline(y=0, color='gray', linewidth=0.5, linestyle=':')
-axes[2].set_xlabel("BDP (PLN/mies.)")
-axes[2].set_ylabel("Inflacja M120 (%)")
-axes[2].set_title("C. Inflacja: główny efekt makro", fontweight='bold')
+axes[2].set_xlabel("UBI (PLN/month)")
+axes[2].set_ylabel("Inflation M120 (%)")
+axes[2].set_title("C. Inflation: main macro effect", fontweight='bold')
 axes[2].set_xticks(bdp_levels)
 
-fig.suptitle("Podwójny Paradoks: BDP przyspiesza BPO, hamuje Przemysł (kalibracja GUS 2024)",
+fig.suptitle("Dual Paradox: UBI accelerates BPO, decelerates Manufacturing (GUS 2024 calibration)",
              fontsize=12, fontweight='bold', y=1.03)
 fig.tight_layout()
 fig.savefig(OUT_DIR / "v6_gus_dual_paradox.png")

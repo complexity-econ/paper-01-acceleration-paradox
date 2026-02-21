@@ -20,8 +20,8 @@ plt.rcParams.update({
     'savefig.bbox': 'tight',
 })
 
-ROOT = Path(__file__).parent.parent
-MC_DIR = ROOT / "results"
+ROOT = Path(__file__).parent.parent.parent
+MC_DIR = ROOT / "simulations" / "results"
 OUT_DIR = ROOT / "figures"
 
 def load_timeseries(prefix):
@@ -52,7 +52,7 @@ def plot_ts_panel(ax, months, datasets, col_base, title, ylabel, mult=1.0,
                   hline=None, shade_shock=True):
     """Plot time series with mean + 90% CI bands for 3 scenarios."""
     colors = ['#2196F3', '#4CAF50', '#F44336']
-    labels = ['BDP = 0 PLN', 'BDP = 2 000 PLN', 'BDP = 3 000 PLN']
+    labels = ['UBI = 0 PLN', 'UBI = 2,000 PLN', 'UBI = 3,000 PLN']
 
     for i, (ts, color, label) in enumerate(zip(datasets, colors, labels)):
         mean = ts[f"{col_base}_mean"].values * mult
@@ -74,28 +74,28 @@ fig, axes = plt.subplots(2, 3, figsize=(14, 8))
 months = ts_base["Month"].values
 
 plot_ts_panel(axes[0, 0], months, [ts_nobdp, ts_base, ts_bdp3k],
-              "Inflation", "Inflacja (roczna)", "%", mult=100, hline=0)
+              "Inflation", "Inflation (annual)", "%", mult=100, hline=0)
 
 plot_ts_panel(axes[0, 1], months, [ts_nobdp, ts_base, ts_bdp3k],
-              "Unemployment", "Bezrobocie", "%", mult=100)
+              "Unemployment", "Unemployment", "%", mult=100)
 
 plot_ts_panel(axes[0, 2], months, [ts_nobdp, ts_base, ts_bdp3k],
-              "TotalAdoption", "Adopcja technologiczna", "%", mult=100)
+              "TotalAdoption", "Technology adoption", "%", mult=100)
 
 plot_ts_panel(axes[1, 0], months, [ts_nobdp, ts_base, ts_bdp3k],
-              "ExRate", "Kurs PLN/EUR", "PLN/EUR")
+              "ExRate", "PLN/EUR exchange rate", "PLN/EUR")
 
 plot_ts_panel(axes[1, 1], months, [ts_nobdp, ts_base, ts_bdp3k],
-              "MarketWage", "Płaca rynkowa", "PLN/mies.")
+              "MarketWage", "Market wage", "PLN/month")
 
 plot_ts_panel(axes[1, 2], months, [ts_nobdp, ts_base, ts_bdp3k],
-              "GovDebt", "Dług publiczny", "mld PLN", mult=1e-9)
+              "GovDebt", "Public debt", "bn PLN", mult=1e-9)
 
 axes[0, 0].legend(loc='lower left', framealpha=0.9)
 for ax in axes[1, :]:
-    ax.set_xlabel("Miesiąc")
+    ax.set_xlabel("Month")
 
-fig.suptitle("Monte Carlo SFC-ABM: 100 seedów × 3 scenariusze (pasma = 90% CI)",
+fig.suptitle("Monte Carlo SFC-ABM: 100 seeds × 3 scenarios (bands = 90% CI)",
              fontsize=13, fontweight='bold', y=1.01)
 fig.tight_layout()
 fig.savefig(OUT_DIR / "v5_mc_panel6.png")
@@ -110,15 +110,15 @@ plt.close()
 fig, axes = plt.subplots(1, 3, figsize=(14, 4.5))
 
 # Panel A: Adoption histogram (all 3 scenarios)
-for df, color, label in [(term_nobdp, '#2196F3', 'BDP=0'),
-                          (term_base, '#4CAF50', 'BDP=2000'),
-                          (term_bdp3k, '#F44336', 'BDP=3000')]:
+for df, color, label in [(term_nobdp, '#2196F3', 'UBI=0'),
+                          (term_base, '#4CAF50', 'UBI=2,000'),
+                          (term_bdp3k, '#F44336', 'UBI=3,000')]:
     vals = df['TotalAdoption'].values * 100
     axes[0].hist(vals, bins=20, alpha=0.5, color=color, label=label, edgecolor='white')
 
-axes[0].set_xlabel("Adopcja technologiczna M120 (%)")
-axes[0].set_ylabel("Liczba seedów (N=100)")
-axes[0].set_title("A. Rozkład adopcji — bimodalność BDP=2000", fontweight='bold')
+axes[0].set_xlabel("Technology adoption M120 (%)")
+axes[0].set_ylabel("Seed count (N=100)")
+axes[0].set_title("A. Adoption distribution — bimodality at UBI=2,000", fontweight='bold')
 axes[0].legend()
 axes[0].axvline(x=term_base['TotalAdoption'].mean()*100, color='#4CAF50',
                 linestyle='--', linewidth=1.5, alpha=0.7)
@@ -130,9 +130,9 @@ sec_cols = ['BPO_Auto', 'Manuf_Auto', 'Retail_Auto', 'Health_Auto']
 x = np.arange(len(sectors))
 w = 0.25
 
-for i, (df, color, label) in enumerate([(term_nobdp, '#2196F3', 'BDP=0'),
-                                          (term_base, '#4CAF50', 'BDP=2000'),
-                                          (term_bdp3k, '#F44336', 'BDP=3000')]):
+for i, (df, color, label) in enumerate([(term_nobdp, '#2196F3', 'UBI=0'),
+                                          (term_base, '#4CAF50', 'UBI=2,000'),
+                                          (term_bdp3k, '#F44336', 'UBI=3,000')]):
     means = [df[c].mean() * 100 for c in sec_cols]
     stds = [df[c].std() * 100 for c in sec_cols]
     axes[1].bar(x + i * w, means, w, yerr=stds, label=label, color=color,
@@ -140,21 +140,21 @@ for i, (df, color, label) in enumerate([(term_nobdp, '#2196F3', 'BDP=0'),
 
 axes[1].set_xticks(x + w)
 axes[1].set_xticklabels(sectors, rotation=15, ha='right')
-axes[1].set_ylabel("Adopcja (%)")
-axes[1].set_title("B. Adopcja per sektor", fontweight='bold')
+axes[1].set_ylabel("Adoption (%)")
+axes[1].set_title("B. Per-sector adoption", fontweight='bold')
 axes[1].legend()
 
 # Panel C: Inflation vs Adoption scatter
-for df, color, marker, label in [(term_nobdp, '#2196F3', 'o', 'BDP=0'),
-                                   (term_base, '#4CAF50', 's', 'BDP=2000'),
-                                   (term_bdp3k, '#F44336', '^', 'BDP=3000')]:
+for df, color, marker, label in [(term_nobdp, '#2196F3', 'o', 'UBI=0'),
+                                   (term_base, '#4CAF50', 's', 'UBI=2,000'),
+                                   (term_bdp3k, '#F44336', '^', 'UBI=3,000')]:
     axes[2].scatter(df['TotalAdoption'].values * 100,
                     df['Inflation'].values * 100,
                     c=color, marker=marker, alpha=0.4, s=30, label=label)
 
-axes[2].set_xlabel("Adopcja technologiczna (%)")
-axes[2].set_ylabel("Inflacja (%)")
-axes[2].set_title("C. Przestrzeń fazowa: adopcja × inflacja", fontweight='bold')
+axes[2].set_xlabel("Technology adoption (%)")
+axes[2].set_ylabel("Inflation (%)")
+axes[2].set_title("C. Phase space: adoption × inflation", fontweight='bold')
 axes[2].axhline(y=0, color='gray', linewidth=0.5, linestyle=':')
 axes[2].legend()
 
@@ -183,10 +183,10 @@ for col, (label, color) in sec_map.items():
     ax.plot(months, mean, color=color, linewidth=2, label=label)
     ax.fill_between(months, p05, p95, color=color, alpha=0.15)
 
-ax.axvline(x=30, color='gray', linestyle='--', linewidth=0.8, alpha=0.5, label='BDP shock (M30)')
-ax.set_xlabel("Miesiąc")
-ax.set_ylabel("Adopcja technologiczna (%)")
-ax.set_title("Adopcja per sektor — BDP=2000 PLN (pasma = 90% CI, N=100)",
+ax.axvline(x=30, color='gray', linestyle='--', linewidth=0.8, alpha=0.5, label='UBI shock (M30)')
+ax.set_xlabel("Month")
+ax.set_ylabel("Technology adoption (%)")
+ax.set_title("Per-sector adoption — UBI=2,000 PLN (bands = 90% CI, N=100)",
              fontweight='bold')
 ax.legend(loc='upper left')
 ax.set_xlim(1, 120)
@@ -219,9 +219,9 @@ axes[0].errorbar(bdp_levels, means, yerr=stds, fmt='o-', capsize=8,
 for i, (x, y, c) in enumerate(zip(bdp_levels, means, colors_pts)):
     axes[0].scatter(x, y, c=c, s=120, zorder=5, edgecolor='white', linewidth=1.5)
 
-axes[0].set_xlabel("BDP (PLN/mies.)")
-axes[0].set_ylabel("Adopcja technologiczna M120 (%)")
-axes[0].set_title("A. Paradoks Akceleracji", fontweight='bold')
+axes[0].set_xlabel("UBI (PLN/month)")
+axes[0].set_ylabel("Technology adoption M120 (%)")
+axes[0].set_title("A. Acceleration Paradox", fontweight='bold')
 axes[0].set_xticks(bdp_levels)
 
 # Panel B: Inflation vs BDP
@@ -238,12 +238,12 @@ for i, (x, y, c) in enumerate(zip(bdp_levels, means_inf, colors_pts)):
     axes[1].scatter(x, y, c=c, s=120, zorder=5, edgecolor='white', linewidth=1.5)
 
 axes[1].axhline(y=0, color='gray', linewidth=0.5, linestyle=':')
-axes[1].set_xlabel("BDP (PLN/mies.)")
-axes[1].set_ylabel("Inflacja M120 (%)")
-axes[1].set_title("B. Inflacja vs. BDP", fontweight='bold')
+axes[1].set_xlabel("UBI (PLN/month)")
+axes[1].set_ylabel("Inflation M120 (%)")
+axes[1].set_title("B. Inflation vs. UBI", fontweight='bold')
 axes[1].set_xticks(bdp_levels)
 
-fig.suptitle("Odpowiedź nieliniowa: BDP ↔ transformacja technologiczna",
+fig.suptitle("Nonlinear response: UBI ↔ technological transformation",
              fontsize=12, fontweight='bold', y=1.02)
 fig.tight_layout()
 fig.savefig(OUT_DIR / "v5_mc_nonlinear.png")
