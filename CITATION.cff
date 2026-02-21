@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+type: software
+title: "The Acceleration Paradox: UBI as Automation Catalyst in a Small Open Economy"
+authors:
+  - family-names: Maciaszek
+    given-names: Mateusz
+version: 1.0.0
+date-released: 2026-02-22
+license: MIT
+repository-code: https://github.com/complexity-econ/paper-01-acceleration-paradox
+keywords:
+  - UBI
+  - phase transition
+  - SFC-ABM
+  - complexity economics
+  - Monte Carlo
+  - bifurcation
+  - non-ergodic economics
+  - technological deflation
