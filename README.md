@@ -1,5 +1,7 @@
 # The Acceleration Paradox
 
+[![DOI](https://zenodo.org/badge/1163612523.svg)](https://doi.org/10.5281/zenodo.18727928)
+
 **UBI as Automation Catalyst in a Small Open Economy: An SFC-ABM Approach**
 
 Mateusz Maciaszek, 2026
