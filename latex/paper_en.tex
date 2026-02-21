@@ -1,0 +1,381 @@
+\documentclass[11pt,a4paper]{article}
+
+% Fonts and encoding
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{english}
+
+% Page geometry
+\usepackage[margin=2.5cm]{geometry}
+
+% Math
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Graphics
+\usepackage{graphicx}
+\usepackage{float}
+\graphicspath{{../figures/}}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+% Hyperlinks
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+% Bibliography
+\usepackage[backend=bibtex,style=authoryear,sorting=nyt,maxnames=3]{biblatex}
+\addbibresource{references.bib}
+
+% Line spacing
+\usepackage{setspace}
+\onehalfspacing
+
+% Section formatting
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{0.5em}{}
+
+% Headers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small The Acceleration Paradox}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\title{\textbf{The Acceleration Paradox: Universal Basic Income as Automation Catalyst in a Small Open Economy}\\[0.5em]
+\large An SFC-ABM Approach with Monte Carlo Validation}
+\author{Mateusz Maciaszek\\
+\small \href{https://github.com/complexity-econ}{github.com/complexity-econ}}
+\date{2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent We reverse the standard causality in the UBI--automation debate: Universal Basic Income does not respond to technological unemployment---it \emph{causes} it. Through a double cost shock (rising reservation wages and rising interest rates in a small open economy), UBI renders labor-intensive business models mathematically unsustainable, forcing firms into a nonlinear technological leap. Using a Stock-Flow Consistent Agent-Based Model (SFC-ABM) with 10,000 heterogeneous firms across 6 sectors (calibrated to Polish GUS 2024 data), connected via a Watts-Strogatz small-world network, and validated through 100-seed Monte Carlo simulation across 3 scenarios, we identify a \textbf{phase transition} at UBI = 2,000~PLN/month. At this critical point, technology adoption exhibits bimodality (Hartigan dip test: $p = 1.7 \times 10^{-5}$, GMM $K=3$), with the system splitting between a high-adoption attractor (73\%, 59\% of seeds) and a low-adoption attractor (34\%, 21\% of seeds). A 21-point parameter sweep (0--5,000~PLN) reveals a non-monotonic inverted-U relationship between UBI level and adoption, with maximum variance at the critical point---a signature of self-organized criticality. The resulting \textbf{Endogenous Technological Deflation}, where AI-driven productivity growth outpaces monetary expansion, resolves the inflationary dilemma of Modern Monetary Theory.
+
+\medskip
+\noindent\textbf{Keywords:} UBI, phase transition, SFC-ABM, bifurcation, non-ergodic economics, Monte Carlo, CES production function, technological deflation, Watts-Strogatz network, complexity economics.
+
+\medskip
+\noindent\textbf{JEL:} C63, E17, E24, H24, O33.
+
+\medskip
+\noindent\textbf{Code \& Data:} \url{https://github.com/complexity-econ/paper-01-acceleration-paradox}
+\end{abstract}
+
+% ══════════════════════════════════════════════════════════════════
+\section{Introduction}
+\label{sec:introduction}
+
+The dominant narrative in macroeconomics treats automation as an exogenous force that displaces labor, creating a need for Universal Basic Income (UBI) as a safety net \parencite{brynjolfsson2014,frey2017}. The IMF's Fiscal Monitor \parencite{imf2017} analyzes UBI through the lens of fiscal costs and efficiency-equity tradeoffs, implicitly assuming that production technology is fixed and that labor markets converge to equilibrium.
+
+We propose a fundamentally reversed causality. The \textbf{Acceleration Paradox} posits that UBI is not a consequence of automation but its \emph{prime cause}---a catalyst that forces firms into discontinuous technological substitution. In a small open economy (Poland), UBI generates a double cost shock:
+
+\begin{enumerate}
+    \item \textbf{Labor cost shock}: UBI raises the reservation wage, increasing the effective cost of human labor.
+    \item \textbf{Capital cost shock}: The resulting inflationary pressure and current account deterioration force the central bank to raise interest rates (Interest Rate Parity constraint).
+\end{enumerate}
+
+Under these conditions, the firm's optimization problem undergoes a \textbf{bifurcation}: traditional business models become unsustainable, and the only viable survival strategy is a nonlinear leap toward zero-marginal-cost AI capital.
+
+This paper makes three contributions. First, we formalize the amplification mechanism through a CES production function where high elasticity of substitution ($\sigma \to \infty$ for AI) transforms a modest cost shock into explosive capital-labor substitution (Section~\ref{sec:theory}). Second, we construct a full SFC-ABM simulation with 10,000 firms, 6 sectors, Watts-Strogatz network topology, and endogenous monetary/fiscal policy, calibrated to Polish GUS/NBP 2024 data (Section~\ref{sec:model}). Third, we validate results through 100-seed Monte Carlo simulation across 3 scenarios and a 21-point parameter sweep, discovering a phase transition with bimodality at the critical UBI level (Section~\ref{sec:results}).
+
+% ══════════════════════════════════════════════════════════════════
+\section{Theoretical Framework}
+\label{sec:theory}
+
+\subsection{Non-Ergodicity and the Absorbing Barrier}
+\label{sec:nonergodicity}
+
+Standard DSGE models assume ergodic dynamics: the time average for a single firm converges to the ensemble average \parencite{imf2017}. Peters \parencite{peters2019} demonstrates that economic decision-making is fundamentally \textbf{non-ergodic}: the time-average growth rate diverges from the expected value when absorbing barriers (bankruptcy) exist.
+
+Under UBI-induced cost shocks, firms face a binary outcome: survive through technological transformation or hit the absorbing barrier. The decision to automate is not profit optimization---it is a \textbf{ruin-avoidance strategy}. This creates path dependence (hysteresis): once a firm invests in AI, the decision is irreversible even if macroeconomic conditions revert \parencite{arthur1994}.
+
+\subsection{CES Amplification Mechanism}
+\label{sec:ces}
+
+We model the firm's technology choice using a CES production function:
+\begin{equation}
+    Y = A\left[\alpha L^{\frac{\sigma-1}{\sigma}} + (1-\alpha) K_{AI}^{\frac{\sigma-1}{\sigma}}\right]^{\frac{\sigma}{\sigma-1}}
+    \label{eq:ces}
+\end{equation}
+
+Cost minimization yields the optimal capital-labor ratio:
+\begin{equation}
+    \frac{K_{AI}}{L} = \theta^\sigma, \quad \text{where} \quad \theta \equiv \frac{1-\alpha}{\alpha} \cdot \frac{w}{r}
+    \label{eq:theta}
+\end{equation}
+
+The cost pressure index $\theta$ captures the relative price of labor to capital, weighted by factor shares. The key insight is that $K_{AI}/L$ is a \emph{power function} of $\theta$ with exponent $\sigma$. For traditional machinery ($\sigma \approx 1$), a 5\% shift in $\theta$ produces a 5\% change in the capital-labor ratio. For generative AI ($\sigma = 50$), the same 5\% shift produces a \textbf{13$\times$ amplification} (Table~\ref{tab:sigma}).
+
+\begin{table}[H]
+\centering
+\caption{CES amplification: $K_{AI}/L$ response to a 5.3\% increase in $\theta$ (from 1.23 to 1.30) at different elasticities of substitution. Calibration: $\alpha = 0.70$, pre-UBI wage 70,000~PLN/yr, post-UBI wage 91,000~PLN/yr.}
+\label{tab:sigma}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Technology} & $\boldsymbol{\sigma}$ & $K/L$ \textbf{pre-UBI} & $K/L$ \textbf{post-UBI} & \textbf{Amplification} \\
+\midrule
+Traditional machinery & 1 & 1.23 & 1.30 & 1.1$\times$ \\
+Industrial robotics & 5 & 2.86 & 3.71 & 1.3$\times$ \\
+Manufacturing automation & 10 & 8.19 & 13.79 & 1.7$\times$ \\
+BPO/cognitive tasks & 20 & 67.07 & 190.05 & 2.8$\times$ \\
+LLM/generative AI & 50 & 24,800 & 327,339 & 13.2$\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Endogenous Technological Deflation}
+\label{sec:deflation}
+
+The inflationary dilemma of MMT \parencite{kelton2020,wray2015} is resolved through \textbf{Endogenous Technological Deflation}. In the dynamic quantity equation $\pi = \Delta M + \Delta V - \Delta Y$, UBI increases money supply ($\Delta M > 0$), but forced automation generates exponential productivity growth ($\Delta Y_{AI} \gg \Delta M$). AI acts as an \emph{inflationary absorption buffer}---instead of taxing away excess money, the economy absorbs it through a massive supply of cheap AI-produced goods and services.
+
+The sufficient condition for technological deflation is $g_Y > g_M + g_V$, where $g_Y$ grows exponentially (scaling laws for AI) while $g_M$ grows linearly (constant UBI transfer). The SFC-ABM simulation identifies the crossover at approximately month 95 (Section~\ref{sec:results}).
+
+\subsection{Zero Marginal Cost Paradox}
+\label{sec:zmc}
+
+Critics argue that high interest rates under UBI would prevent AI investment. This confuses cost structures:
+\begin{itemize}
+    \item \textbf{Labor}: Low CAPEX, high and rising marginal cost. $AC_L = w$ (constant, set by UBI).
+    \item \textbf{AI}: High CAPEX (debt-financed at rate $r$), near-zero marginal cost. $\lim_{Y \to \infty} AC_{AI} = FC(r)/Y = 0$.
+\end{itemize}
+
+Even at elevated interest rates, economies of scale from zero marginal cost make AI dominant at mass production volumes---precisely the volumes that UBI-stimulated demand creates.
+
+% ══════════════════════════════════════════════════════════════════
+\section{Model Architecture}
+\label{sec:model}
+
+\subsection{Overview}
+\label{sec:overview}
+
+We construct a Stock-Flow Consistent Agent-Based Model (SFC-ABM) in the tradition of \textcite{godley2007}, extending the framework of \textcite{dosi2010} and \textcite{dawid2018} with endogenous technology adoption, network effects, and multi-sector heterogeneity. The model comprises 6 balance-sheet blocks ensuring double-entry consistency:
+
+\begin{enumerate}
+    \item \textbf{10,000 firm agents} with heterogeneous parameters (digital readiness, risk profile, innovation cost multiplier), making endogenous technology decisions: Traditional $\to$ Hybrid $\to$ Automated $|$ Bankrupt.
+    \item \textbf{Household sector} (aggregated) with logistic labor supply curve and reservation wage.
+    \item \textbf{Government} financing UBI and base spending from CIT and VAT revenues.
+    \item \textbf{Banking system} with endogenous credit creation, NPL tracking, and Basel III capital adequacy requirements (CAR $\geq$ 8\%).
+    \item \textbf{Central bank (NBP)} with endogenous Taylor rule ($\alpha = 1.5$, $\beta = 0.8$, inertia 0.70).
+    \item \textbf{Foreign sector} with exchange rate determined by balance of payments and interest rate parity (IRP).
+\end{enumerate}
+
+Each simulation runs for 120 months (10 years). UBI is activated at month 30 (after 2.5 years of stable economy).
+
+\subsection{Sector Calibration (GUS 2024)}
+\label{sec:sectors}
+
+Firms are distributed across 6 sectors calibrated to Polish Central Statistical Office (GUS) and National Bank of Poland (NBP) data for 2024 (Table~\ref{tab:sectors}). Each sector has a distinct CES elasticity of substitution $\sigma$, reflecting heterogeneous automation potential.
+
+\begin{table}[H]
+\centering
+\caption{Sector calibration. Sources: GUS BAEL 2024, GUS wage data 2024, ABSL 2024.}
+\label{tab:sectors}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Sector} & \textbf{Share} & $\boldsymbol{\sigma}$ & \textbf{Wage mult.} & \textbf{AI CAPEX mult.} & \textbf{Digital readiness} & \textbf{Hybrid retain} \\
+\midrule
+BPO/SSC & 3\% & 50 & 1.35 & 0.70 & 0.50 & 50\% \\
+Manufacturing & 16\% & 10 & 0.94 & 1.12 & 0.45 & 60\% \\
+Retail/Services & 45\% & 5 & 0.79 & 0.85 & 0.40 & 65\% \\
+Healthcare & 6\% & 2 & 0.97 & 1.38 & 0.25 & 75\% \\
+Public sector & 22\% & 1 & 0.91 & 3.00 & 0.08 & 90\% \\
+Agriculture & 8\% & 3 & 0.67 & 2.50 & 0.12 & 85\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Network Topology}
+\label{sec:network}
+
+Firms are connected via a \textbf{Watts-Strogatz small-world network} ($k = 6$ nearest neighbors, rewiring probability $p = 0.10$). The network mediates a \emph{demonstration effect}: when $>$40\% of a firm's neighbors have adopted AI or hybrid technology, the firm's perceived uncertainty discount decreases by up to 15\%, accelerating its own adoption decision.
+
+\subsection{Non-Ergodicity Discount}
+\label{sec:nediscount}
+
+A key calibration parameter is the \textbf{non-ergodicity discount} (initial value 0.15), reflecting firms' reluctance to automate despite $\theta > 1$. This discount captures the gap between ensemble-optimal behavior (automate) and time-average-optimal behavior (avoid ruin from failed implementation). UBI eliminates this discount by making the cost shock permanent and market-wide, thereby reducing relative uncertainty about automation payoffs \parencite{peters2019}.
+
+\subsection{Firm Decision Logic}
+\label{sec:firmlogic}
+
+Each month, every firm evaluates three options based on profitability, cash reserves, digital readiness, bank lending capacity, and network mimetic pressure:
+
+\begin{itemize}
+    \item \textbf{Full automation}: CAPEX = 1.2M PLN $\times$ sector multiplier, retains 2 skeleton crew workers. Requires digital readiness $\geq$ 0.35.
+    \item \textbf{Hybrid mode}: CAPEX = 350K PLN $\times$ sector multiplier, retains sector-specific fraction of workers. Requires digital readiness $\geq$ 0.20.
+    \item \textbf{Status quo / bankruptcy}: If neither option is viable and cash $< 0$, the firm exits.
+\end{itemize}
+
+Implementation failure rates are endogenous: 5--15\% for full automation, 3--10\% for hybrid, increasing with lower digital readiness. Failed implementations result in partial capital destruction and potential bankruptcy.
+
+% ══════════════════════════════════════════════════════════════════
+\section{Results}
+\label{sec:results}
+
+\subsection{Monte Carlo Design}
+\label{sec:mcdesign}
+
+We run three scenarios, each with $N = 100$ Monte Carlo seeds:
+\begin{itemize}
+    \item \textbf{Counterfactual}: UBI = 0~PLN (non-ergodicity discount remains high throughout).
+    \item \textbf{Baseline}: UBI = 2,000~PLN/month (main scenario).
+    \item \textbf{Escalation}: UBI = 3,000~PLN/month.
+\end{itemize}
+
+Additionally, a 21-point parameter sweep (UBI = 0 to 5,000~PLN, step 250, $N = 30$ seeds each) maps the full bifurcation structure.
+
+\subsection{Main Results: Three Scenarios}
+\label{sec:mainresults}
+
+Table~\ref{tab:results} and Figure~\ref{fig:panel6} summarize terminal (M120) outcomes.
+
+\begin{table}[H]
+\centering
+\caption{Terminal values at month 120. Mean $\pm$ std from $N = 100$ Monte Carlo seeds.}
+\label{tab:results}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Metric} & \textbf{UBI = 0} & \textbf{UBI = 2,000} & \textbf{UBI = 3,000} \\
+\midrule
+AI + Hybrid adoption & 12.9\% $\pm$ 4.3 & 61.9\% $\pm$ 16.4 & 32.8\% $\pm$ 2.1 \\
+Inflation (annual) & $-$22.6\% & $-$13.4\% & +19.4\% \\
+Unemployment & 78.7\% & 39.6\% & 19.4\% \\
+PLN/EUR exchange rate & 3.29 & 4.66 & 5.08 \\
+Market wage & 4,000 PLN & 5,331 PLN & 6,487 PLN \\
+Public debt & $-$0.83 bn & 12.58 bn & 15.23 bn \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{v5_mc_panel6.png}
+\caption{Monte Carlo SFC-ABM: 100 seeds $\times$ 3 scenarios. Bands = 90\% confidence intervals. UBI shock at month 30.}
+\label{fig:panel6}
+\end{figure}
+
+\textbf{Counterfactual (UBI = 0)}: Without UBI, the non-ergodicity discount prevents adoption ($\theta > 1$ but firms avoid ruin risk). The economy collapses into a Fisherian debt-deflation spiral: deflation reaches $-$22.6\%, unemployment 78.7\%, and market wages fall to the reservation floor (4,000~PLN). This outcome validates the role of UBI as a necessary catalyst.
+
+\textbf{Baseline (UBI = 2,000)}: UBI triggers the Acceleration Paradox. After the M30 shock, inflation peaks at 13.7\% (M40), prompting the Taylor rule to push the reference rate to 20\%. This double shock (wages + rates) forces firms through the bifurcation: adoption reaches 61.9\% by M120. Inflation crosses zero around M95 and turns to mild technological deflation ($-$0.6\%), confirming the Endogenous Technological Deflation hypothesis.
+
+\textbf{Escalation (UBI = 3,000)}: Excessive UBI generates persistent inflation (+19.4\%) that blocks the credit channel. High lending rates (27\%+) make AI investment unaffordable, and adoption stalls at 32.8\%. The economy achieves low unemployment (19.4\%) through demand stimulus but fails to transform technologically.
+
+\subsection{Bimodality and Phase Transition}
+\label{sec:bimodality}
+
+The baseline scenario (UBI = 2,000) exhibits \textbf{bimodality} in the adoption distribution (Figure~\ref{fig:diptest}). Hartigan's dip test rejects unimodality ($p = 1.7 \times 10^{-5}$). Gaussian Mixture Model selection (BIC-optimal $K = 3$) identifies three attractor states:
+
+\begin{itemize}
+    \item \textbf{High attractor}: $\mu = 73.3\%$, weight 0.59 (59\% of seeds).
+    \item \textbf{Intermediate}: $\mu = 57.6\%$, weight 0.19.
+    \item \textbf{Low attractor}: $\mu = 34.2\%$, weight 0.21 (21\% of seeds).
+\end{itemize}
+
+Neither UBI = 0 ($p = 0.75$) nor UBI = 3,000 ($p = 0.97$) exhibit bimodality---confirming that the phase transition is localized at the critical UBI level.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{v5_mc_diptest.png}
+\caption{Bimodality analysis at UBI = 2,000~PLN. (A)~Histogram with KDE and GMM fit. (B)~BIC model selection (optimal $K = 3$). (C)~Density comparison across 3 scenarios.}
+\label{fig:diptest}
+\end{figure}
+
+\subsection{Bifurcation Diagram}
+\label{sec:bifurcation}
+
+A 21-point parameter sweep (UBI = 0 to 5,000~PLN, $N = 30$ seeds per level, 630 total simulations) reveals the full topology (Figure~\ref{fig:bifurcation}):
+
+\begin{itemize}
+    \item \textbf{Below threshold} (UBI $<$ 1,250): Economy frozen in Fisherian debt-deflation, unemployment $>$80\%.
+    \item \textbf{Critical window} (1,500--2,250): High mean adoption ($>$45\%), with UBI = 1,750 maximizing mean adoption (70.1\%) and UBI = 2,000 maximizing variance ($\sigma = 16.4\%$)---the classic signature of a critical point.
+    \item \textbf{Above threshold} (UBI $>$ 2,500): Adoption stabilizes at $\sim$32\% regardless of UBI level; rising inflation (up to 52\% at UBI = 5,000) blocks the credit channel.
+\end{itemize}
+
+The variance peak at the critical point is analogous to critical slowing down in statistical physics \parencite{arthur2015}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{v5_mc_bifurcation.png}
+\caption{Bifurcation diagram: UBI sweep 0--5,000~PLN (30 seeds $\times$ 21 points = 630 simulations). (A)~Adoption scatter with mean $\pm \sigma$. (B)~Inflation transition from deflation to hyperinflation. (C)~Adoption variance---peak at UBI = 2,000 confirms critical point. (D)~Unemployment.}
+\label{fig:bifurcation}
+\end{figure}
+
+\subsection{Sectoral Heterogeneity: The Dual Paradox}
+\label{sec:sectors_results}
+
+GUS 2024-calibrated simulation reveals a \textbf{Dual Acceleration Paradox} (Figure~\ref{fig:sectors}): UBI simultaneously \emph{accelerates} automation in high-$\sigma$ sectors and \emph{decelerates} it in low-$\sigma$ sectors.
+
+\begin{itemize}
+    \item \textbf{BPO/SSC} ($\sigma = 50$): Adoption rises from 64\% (UBI=0) to 85\% (UBI=2,000), a +21pp acceleration. High $\sigma$ amplifies even moderate cost shocks.
+    \item \textbf{Manufacturing} ($\sigma = 10$): Adoption \emph{falls} from 45\% (UBI=0) to 32\% (UBI=2,000), a $-$13pp deceleration. The credit channel blockage (high rates) outweighs the cost-push incentive at moderate $\sigma$.
+    \item \textbf{Retail/Services, Healthcare, Public, Agriculture} ($\sigma \leq 5$): Adoption remains below 12\% regardless of UBI---these sectors are structurally resistant to automation.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{v5_mc_sectors.png}
+\caption{Per-sector adoption dynamics under UBI = 2,000~PLN. Bands = 90\% CI, $N = 100$ seeds. BPO/SSC ($\sigma = 50$) leads; Healthcare ($\sigma = 2$) is structurally resistant.}
+\label{fig:sectors}
+\end{figure}
+
+\subsection{Welfare Analysis}
+\label{sec:welfare}
+
+Figure~\ref{fig:welfare} presents a multidimensional welfare comparison. UBI = 2,000 dominates on real consumption per capita (5,950~PLN vs. 2,311~PLN at UBI=0 and 1,570~PLN at UBI=3,000) and Gini coefficient (0.2 vs. 0.8 at UBI=0). The UBI = 3,000 scenario achieves the lowest Gini (0.1) but at the cost of severe real consumption loss through inflation erosion.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{v5_mc_welfare.png}
+\caption{Welfare analysis. (A)~Real consumption per capita. (B)~Gini coefficient. (C)~Equality--consumption tradeoff. (D)~Multidimensional comparison.}
+\label{fig:welfare}
+\end{figure}
+
+% ══════════════════════════════════════════════════════════════════
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{The Acceleration Paradox as Policy Design Principle}
+
+Our results suggest that UBI is not merely a redistribution instrument but a \textbf{macroeconomic phase transition trigger}. The policy implication is precise: UBI must be calibrated to the critical window (approximately 1,500--2,250~PLN/month for Poland) to achieve technological transformation without triggering inflationary blockage. Below the threshold, the economy stagnates; above it, inflation destroys the credit channel that finances automation.
+
+\subsection{Sovereign Currency Requirement}
+
+The mechanism depends critically on an autonomous central bank that can raise interest rates in response to inflation (Taylor rule). In a currency union (e.g., Eurozone), the absence of an independent monetary policy would eliminate the ``expensive money'' channel that drives the Acceleration Paradox. UBI in such a regime would produce inflation without compensating technological transformation---leading to fiscal crisis rather than modernization.
+
+\subsection{Limitations}
+
+The model has several limitations that define the agenda for future work:
+\begin{itemize}
+    \item No general equilibrium feedback between the simulated economy and the rest of the world.
+    \item Empirical calibration of sector-specific $\sigma$ values relies on proxies (robot density, IT investment) rather than direct econometric estimation.
+    \item The model does not account for skill retraining or labor market transitions within sectors.
+    \item Network structure is static; real-world firm networks evolve endogenously.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════
+\section{Conclusion}
+\label{sec:conclusion}
+
+We demonstrate that Universal Basic Income, when introduced in a small open economy with a sovereign currency, acts as a \textbf{catalyst for forced technological substitution} rather than a passive redistribution mechanism. The SFC-ABM simulation identifies a critical UBI level (2,000~PLN/month for Poland) that places the economy at a phase transition: bimodal adoption outcomes, maximum variance, and emergent technological deflation that self-corrects the inflationary impulse.
+
+The Acceleration Paradox---where the instrument designed to protect workers from automation becomes the very force that accelerates it---has profound implications for policy design. The optimal UBI level is not the highest feasible transfer but the one that positions the economy at the critical point of maximum transformative potential, while the sovereign monetary policy provides the evolutionary filter that separates viable firms from unviable ones.
+
+\medskip
+\noindent\textbf{Reproducibility.} All simulation code (Scala/Ammonite), analysis scripts (Python), Monte Carlo results, and figures are available at \href{https://github.com/complexity-econ/paper-01-acceleration-paradox}{github.com/complexity-econ/paper-01-acceleration-paradox} under MIT license.
+
+% ══════════════════════════════════════════════════════════════════
+\printbibliography
+
+\end{document}
