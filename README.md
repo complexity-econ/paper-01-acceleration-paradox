@@ -103,7 +103,7 @@ BDP=2000 SEEDS=10 PREFIX=quick amm simulation_mc.sc
 
 ## Related
 
-- [`complexity-econ/core`](https://github.com/complexity-econ/core) — Modularized Scala 3 simulation engine extracted from this project
+- [`complexity-econ/core`](https://github.com/complexity-econ/core) — Modularized Scala 3 simulation engine extracted from this project. This repo is **self-contained** (includes its own `simulation_mc.sc`); `core` is the reusable version for future papers.
 
 ## License
 
