@@ -134,7 +134,11 @@ BDP=2000 SEEDS=10 PREFIX=quick amm simulation_mc.sc
 
 ## Related
 
-- [`complexity-econ/core`](https://github.com/complexity-econ/core) — Modularized Scala 3 simulation engine extracted from this project. This repo is **self-contained** (includes its own `simulation_mc.sc`); `core` is the reusable version for future papers.
+- [Paper-02: Monetary Regimes](https://github.com/complexity-econ/paper-02-monetary-regimes)
+- [Paper-03: Empirical σ Estimation](https://github.com/complexity-econ/paper-03-empirical-sigma)
+- [Paper-04: Phase Diagram & Universality](https://github.com/complexity-econ/paper-04-phase-diagram)
+- [Paper-05: Endogenous Technology & Networks](https://github.com/complexity-econ/paper-05-endogenous)
+- [Core engine](https://github.com/complexity-econ/core)
 
 ## License
 
