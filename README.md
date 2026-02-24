@@ -91,17 +91,46 @@ BDP=2000 SEEDS=10 PREFIX=quick amm simulation_mc.sc
 
 ## Figures
 
-| Figure | Description |
-|--------|-------------|
-| `v5_mc_panel6` | Main panel: inflation, unemployment, adoption, exchange rate, wage, debt |
-| `v5_mc_bifurcation` | Bifurcation diagram across 21 UBI levels |
-| `v5_mc_bimodal` | Bimodality: histogram + GMM fit (K=3) |
-| `v5_mc_diptest` | Hartigan dip test visualization |
-| `v5_mc_nonlinear` | Inverted-U relationship: UBI level vs adoption |
-| `v5_mc_sectors` | Per-sector adoption dynamics |
-| `v5_mc_welfare` | Welfare analysis across scenarios |
-| `v6_gus_dual_paradox` | GUS-calibrated dual paradox visualization |
-| `v6_gus_sector_comparison` | Sector comparison with GUS data |
+### Monte Carlo Panel
+
+![panel6](figures/v5_mc_panel6.png)
+**Main panel.** Six macroeconomic variables across 120 months for three UBI scenarios (0, 2000, 3000 PLN). Mean lines with 90% confidence bands over 100 seeds. The shock at month 30 triggers fundamentally different trajectories depending on UBI level.
+
+### Bifurcation Diagram
+
+![bifurcation](figures/v5_mc_bifurcation.png)
+**Bifurcation across 21 UBI levels.** Four panels: adoption, inflation, adoption variance, and unemployment vs BDP. The variance peak at BDP = 2000 PLN marks the critical point of the phase transition.
+
+### Bimodality Analysis
+
+![bimodal](figures/v5_mc_bimodal.png)
+**Phase transition evidence.** Adoption histogram shows a bimodal distribution at UBI = 2000 PLN (three attractor states via GMM, K=3). Per-sector bars reveal BPO/SSC and Manufacturing respond in opposite directions. Phase space scatter confirms regime separation.
+
+![diptest](figures/v5_mc_diptest.png)
+**Formal bimodality test.** Hartigan dip test rejects unimodality (p = 1.7 × 10⁻⁵). BIC model selection identifies K=3 as optimal. KDE overlay shows bimodality is unique to the critical UBI level.
+
+### Nonlinear Response
+
+![nonlinear](figures/v5_mc_nonlinear.png)
+**The Acceleration Paradox in two panels.** Adoption vs UBI shows an inverted-U — moderate UBI maximizes automation, while higher UBI triggers inflation that chokes investment. This is the core finding of the paper.
+
+### Sector Dynamics
+
+![sectors](figures/v5_mc_sectors.png)
+**Per-sector adoption trajectories** at UBI = 2000 PLN. BPO/SSC (σ=50) races to near-complete automation while Manufacturing (σ=10) stalls — the double cost shock hits high-elasticity sectors hardest.
+
+### Welfare Analysis
+
+![welfare](figures/v5_mc_welfare.png)
+**Welfare trade-offs.** Real consumption, Gini coefficient, and a composite dashboard across scenarios. UBI = 2000 achieves the highest productivity but at the cost of maximum inequality at the transition point.
+
+### GUS Calibration
+
+![gus_sectors](figures/v6_gus_sector_comparison.png)
+**GUS 2024 sector structure.** All 6 sectors including Public and Agriculture. The 45% weight of Retail/Services (σ=5) in the Polish economy dampens aggregate adoption compared to the simplified 4-sector model.
+
+![gus_dual](figures/v6_gus_dual_paradox.png)
+**The Dual Paradox.** BPO/SSC accelerates (+21 pp) while Manufacturing decelerates (-14 pp) under the same UBI. The inflation channel explains the divergence: high-σ sectors benefit from cost pressure, low-σ sectors are crushed by it.
 
 ## Related
 
